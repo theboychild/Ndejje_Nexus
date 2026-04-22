@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nexus</string>
+    <string name="app_name">Ndejje Nexus</string>
     <string name="login_header">Sign in</string>
     <string name="email_hint">University Email</string>
     <string name="password_hint">Password</string>
