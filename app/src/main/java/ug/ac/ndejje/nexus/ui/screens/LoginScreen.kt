@@ -8,26 +8,28 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ug.ac.ndejje.nexus.R
-import ug.ac.ndejje.nexus.viewmodel.LoginState
-import ug.ac.ndejje.nexus.viewmodel.LoginViewModel
+import ug.ac.ndejje.nexus.viewmodel.AuthUiState
+import ug.ac.ndejje.nexus.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
+    viewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
 ) {
-    var email by remember { mutableStateFlowOf("") }
-    var password by remember { mutableStateFlowOf("") }
-    val loginState by viewModel.loginState.collectAsState()
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val authState by viewModel.authState.collectAsState()
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
+    LaunchedEffect(authState) {
+        if (authState is AuthUiState.Success) {
             onLoginSuccess()
             viewModel.resetState()
         }
@@ -36,78 +38,78 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // University Logo
         Image(
             painter = painterResource(id = R.drawable.ndejje_badge),
-            contentDescription = "University Logo",
-            modifier = Modifier.size(120.dp)
+            contentDescription = "Logo",
+            modifier = Modifier.size(100.dp)
         )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = stringResource(R.string.login_header),
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Welcome Back", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(text = "Sign in to continue", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+        
+        Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text(stringResource(R.string.email_hint)) },
+            label = { Text("Email Address") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text(stringResource(R.string.password_hint)) },
+            label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (loginState is LoginState.Loading) {
-            CircularProgressIndicator()
-        } else {
-            Button(
-                onClick = { viewModel.login(email, password) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text(stringResource(R.string.login_button))
+        AlignEnd {
+            TextButton(onClick = onNavigateToForgotPassword) {
+                Text("Forgot Password?")
             }
         }
 
-        if (loginState is LoginState.Error) {
+        if (authState is AuthUiState.Error) {
             Text(
-                text = (loginState as LoginState.Error).message,
+                text = (authState as AuthUiState.Error).message,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
-        TextButton(onClick = { /* TODO: Forgot Password */ }) {
-            Text(stringResource(R.string.forgot_password))
+        Button(
+            onClick = { viewModel.login(email, password) },
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            enabled = authState !is AuthUiState.Loading
+        ) {
+            if (authState is AuthUiState.Loading) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
+            } else {
+                Text("Login")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextButton(onClick = onNavigateToRegister) {
-            Text(stringResource(R.string.register_prompt))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Don't have an account?")
+            TextButton(onClick = onNavigateToRegister) {
+                Text("Register")
+            }
         }
     }
 }
 
-private fun <T> mutableStateFlowOf(value: T) = mutableStateOf(value)
+@Composable
+fun AlignEnd(content: @Composable () -> Unit) {
+    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+        content()
+    }
+}
