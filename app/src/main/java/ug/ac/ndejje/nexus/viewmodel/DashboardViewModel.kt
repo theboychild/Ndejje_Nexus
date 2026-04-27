@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ug.ac.ndejje.nexus.model.Notice
+import ug.ac.ndejje.nexus.model.NoticeCategory
 import ug.ac.ndejje.nexus.repository.NoticeRepository
 import ug.ac.ndejje.nexus.repository.ShuttleRepository
 
@@ -44,6 +45,17 @@ class DashboardViewModel(
                 )
             } else {
                 _dashboardState.value = DashboardUiState.Error("Failed to load dashboard data.")
+            }
+        }
+    }
+
+    fun addNotice(title: String, content: String, category: NoticeCategory) {
+        if (title.isBlank() || content.isBlank()) return
+
+        viewModelScope.launch {
+            val result = noticeRepository.addNotice(title, content, category)
+            if (result.isSuccess) {
+                loadDashboardData() // Refresh the list
             }
         }
     }
