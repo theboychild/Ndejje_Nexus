@@ -11,10 +11,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.viewmodel.SosViewModel
 
 @Composable
 fun SosConfirmationScreen(
+    user: User,
     viewModel: SosViewModel,
     onNavigateBack: () -> Unit
 ) {
@@ -53,7 +55,7 @@ fun SosConfirmationScreen(
         
         Button(
             onClick = { 
-                viewModel.resetState()
+                viewModel.markAsSafe(user)
                 onNavigateBack() 
             },
             modifier = Modifier.fillMaxWidth().height(56.dp)
