@@ -10,9 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import ug.ac.ndejje.nexus.ui.components.MockMapView
 import ug.ac.ndejje.nexus.viewmodel.ShuttleUiState
 import ug.ac.ndejje.nexus.viewmodel.ShuttleViewModel
 
@@ -46,32 +44,16 @@ fun ShuttleTrackerContent(
     val shuttleState by viewModel.shuttleState.collectAsState()
     val state = shuttleState
 
-    val kampala = LatLng(0.3112, 32.5811)
-    val luwero = LatLng(0.8354, 32.5055)
-
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
             is ShuttleUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             is ShuttleUiState.Success -> {
-                val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(state.busPosition, 12f)
-                }
-
-                GoogleMap(
+                MockMapView(
                     modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    uiSettings = MapUiSettings(zoomControlsEnabled = true)
-                ) {
-                    Marker(
-                        state = rememberMarkerState(position = state.busPosition),
-                        title = "Kampala-Luwero Shuttle",
-                        snippet = "ETA: ${state.eta} mins"
-                    )
-                    Marker(state = rememberMarkerState(position = kampala), title = "Kampala Campus")
-                    Marker(state = rememberMarkerState(position = luwero), title = "Main Campus (Luwero)")
-                }
+                    busLocation = true
+                )
             }
             is ShuttleUiState.Error -> {
                 Column(
