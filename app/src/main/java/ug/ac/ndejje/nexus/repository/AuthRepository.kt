@@ -3,6 +3,8 @@
  * Think of this as the app's "Secretary" or "Record Keeper."
  * Its job is to handle the "Paperwork" for logging in, signing up, and keeping 
  * track of which student is currently using the phone.
+ * 
+ * NOTE: This uses an in-memory list (Simulated Database) to store users.
  */
 package ug.ac.ndejje.nexus.repository
 
@@ -13,20 +15,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import ug.ac.ndejje.nexus.model.User
 
 class AuthRepository {
-    /* "currentUser" is now a StateFlow so the app can "Listen" for changes 
-     * to who is logged in. 
-     */
+    /* "currentUser" tracks the student currently logged in. */
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
     
-    /* "users" is our in-memory list of registered students. */
+    /* SIMULATED DATABASE: "users" is our list of registered students. */
     private val users = mutableListOf<User>()
 
     /**
      * login checks if the email and password match someone in our records.
      */
     suspend fun login(email: String, password: String): Result<User> {
-        delay(1000) 
+        delay(1000) // Simulating network/DB delay
         val cleanEmail = email.trim().lowercase()
         val user = users.find { (it.email.lowercase() == cleanEmail) && (it.password == password) }
         
@@ -39,13 +39,19 @@ class AuthRepository {
     }
 
     /**
-     * register adds a new student to our records.
+     * register adds a new student to our records (The DB).
      */
     suspend fun register(user: User): Result<Unit> {
-        delay(1000) 
-        val cleanUser = user.copy(email = user.email.trim().lowercase())
-        users.add(cleanUser)
-        _currentUser.value = cleanUser 
+        delay(1000) // Simulating network/DB delay
+        val cleanEmail = user.email.trim().lowercase()
+        
+        /* Ensure the email isn't already taken in our "Database". */
+        if (users.any { it.email.lowercase() == cleanEmail }) {
+            return Result.failure(Exception("An account with this email already exists."))
+        }
+        
+        val cleanUser = user.copy(email = cleanEmail)
+        users.add(cleanUser) // Saving to the DB
         return Result.success(Unit)
     }
 

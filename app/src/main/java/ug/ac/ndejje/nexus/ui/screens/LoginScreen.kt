@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ug.ac.ndejje.nexus.R
 import ug.ac.ndejje.nexus.viewmodel.AuthUiState
 import ug.ac.ndejje.nexus.viewmodel.AuthViewModel
@@ -22,11 +21,19 @@ fun LoginScreen(
     viewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit
+    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToSecurity: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
+
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            onLoginSuccess()
+        }
+    }
 
     LaunchedEffect(authState) {
         if (authState is AuthUiState.Success) {
@@ -70,7 +77,7 @@ fun LoginScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 
-        AlignEnd {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
             TextButton(onClick = onNavigateToForgotPassword) {
                 Text("Forgot Password?")
             }
@@ -104,12 +111,11 @@ fun LoginScreen(
                 Text("Register")
             }
         }
-    }
-}
-
-@Composable
-fun AlignEnd(content: @Composable () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-        content()
+        
+        Spacer(modifier = Modifier.weight(1f))
+        
+        TextButton(onClick = onNavigateToSecurity) {
+            Text("Security Access", color = MaterialTheme.colorScheme.secondary)
+        }
     }
 }

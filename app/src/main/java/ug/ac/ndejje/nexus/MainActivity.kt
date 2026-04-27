@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.*
@@ -24,7 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ug.ac.ndejje.nexus.navigation.Screen
-import ug.ac.ndejje.nexus.repository.AuthRepository
+import ug.ac.ndejje.nexus.repository.*
 import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.ui.screens.*
 import ug.ac.ndejje.nexus.ui.theme.NexusTheme
@@ -32,13 +33,16 @@ import ug.ac.ndejje.nexus.viewmodel.*
 
 class MainActivity : ComponentActivity() {
     private val authRepository = AuthRepository()
+    private val noticeRepository = NoticeRepository()
+    private val shuttleRepository = ShuttleRepository()
+    private val sosRepository = SosRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             NexusTheme {
-                NexusApp(authRepository)
+                NexusApp(authRepository, noticeRepository, shuttleRepository, sosRepository)
             }
         }
     }
@@ -48,14 +52,20 @@ class MainActivity : ComponentActivity() {
  * NexusApp is the "Director" or "Traffic Controller" of the app.
  */
 @Composable
-fun NexusApp(authRepository: AuthRepository) {
+fun NexusApp(
+    authRepository: AuthRepository,
+    noticeRepository: NoticeRepository,
+    shuttleRepository: ShuttleRepository,
+    sosRepository: SosRepository
+) {
     val navController = rememberNavController()
+    val factory = ViewModelFactory(authRepository, noticeRepository, shuttleRepository, sosRepository)
     
     /* We initialize the ViewModels. */
-    val authViewModel: AuthViewModel = viewModel(factory = ViewModelFactory(authRepository))
-    val dashboardViewModel: DashboardViewModel = viewModel()
-    val shuttleViewModel: ShuttleViewModel = viewModel()
-    val sosViewModel: SosViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel(factory = factory)
+    val dashboardViewModel: DashboardViewModel = viewModel(factory = factory)
+    val shuttleViewModel: ShuttleViewModel = viewModel(factory = factory)
+    val sosViewModel: SosViewModel = viewModel(factory = factory)
     val profileViewModel: ProfileViewModel = viewModel()
     
     /* We "Watch" the current user from the repository. */
@@ -65,10 +75,10 @@ fun NexusApp(authRepository: AuthRepository) {
     val currentDestination = navBackStackEntry?.destination
 
     val showBottomBar = when (currentDestination?.route) {
-        Screen.Splash.route -> false
         Screen.Login.route -> false
         Screen.Register.route -> false
         Screen.ForgotPassword.route -> false
+        Screen.Security.route -> false
         null -> false
         else -> true
     }
@@ -106,20 +116,10 @@ fun NexusApp(authRepository: AuthRepository) {
     ) { innerPadding ->
         NavHost(
             navController = navController, 
-            startDestination = Screen.Splash.route,
+            startDestination = Screen.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             
-            /* 1. SPLASH SCREEN. */
-            composable(Screen.Splash.route) {
-                SplashScreen(onNavigateToNext = {
-                    val nextDestination = if (currentUser != null) Screen.Dashboard.route else Screen.Login.route
-                    navController.navigate(nextDestination) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
-                })
-            }
-
             /* 2. LOGIN SCREEN. */
             composable(Screen.Login.route) {
                 LoginScreen(
@@ -129,21 +129,30 @@ fun NexusApp(authRepository: AuthRepository) {
                             popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     },
-                    onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                    onNavigateToForgotPassword = { navController.navigate(Screen.ForgotPassword.route) }
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.Register.route)
+                    },
+                    onNavigateToForgotPassword = {
+                        navController.navigate(Screen.ForgotPassword.route)
+                    },
+                    onNavigateToSecurity = {
+                        navController.navigate(Screen.Security.route)
+                    }
                 )
             }
-
-            /* 3. REGISTER SCREEN. */
+            
+            /* 3. REGISTRATION SCREEN. */
             composable(Screen.Register.route) {
                 RegistrationScreen(
                     viewModel = authViewModel,
                     onRegistrationSuccess = {
-                        navController.navigate(Screen.Dashboard.route) {
+                        navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Register.route) { inclusive = true }
                         }
                     },
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
                 )
             }
 
@@ -168,7 +177,7 @@ fun NexusApp(authRepository: AuthRepository) {
                         onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
                     )
                 } else {
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
+                    LaunchedEffect(Unit) {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Dashboard.route) { inclusive = true }
                         }
@@ -186,27 +195,39 @@ fun NexusApp(authRepository: AuthRepository) {
 
             /* 7. SHUTTLE HUB. */
             composable(Screen.ShuttleTracker.route) {
-                ShuttleHubScreen(viewModel = shuttleViewModel)
+                ShuttleHubScreen(
+                    viewModel = shuttleViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
 
             /* 8. EMERGENCY HUB. */
             composable(Screen.SOS.route) {
-                EmergencyHubScreen(
-                    viewModel = sosViewModel,
-                    onNavigateToConfirmation = {
-                        navController.navigate(Screen.SosConfirmation.route) {
-                            popUpTo(Screen.SOS.route) { inclusive = true }
-                        }
-                    }
-                )
+                val user = currentUser
+                if (user != null) {
+                    EmergencyHubScreen(
+                        user = user,
+                        viewModel = sosViewModel,
+                        onNavigateToConfirmation = {
+                            navController.navigate(Screen.SosConfirmation.route) {
+                                popUpTo(Screen.SOS.route) { inclusive = true }
+                            }
+                        },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 9. SOS CONFIRMATION. */
             composable(Screen.SosConfirmation.route) {
-                SosConfirmationScreen(
-                    viewModel = sosViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    SosConfirmationScreen(
+                        user = user,
+                        viewModel = sosViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 10. SHUTTLE SCHEDULE. */
@@ -232,10 +253,14 @@ fun NexusApp(authRepository: AuthRepository) {
 
             /* 13. SAFE WALK. */
             composable(Screen.SafeWalk.route) {
-                SafeWalkScreen(
-                    viewModel = sosViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    SafeWalkScreen(
+                        user = user,
+                        viewModel = sosViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 14. PROFILE SCREEN. */
@@ -254,12 +279,20 @@ fun NexusApp(authRepository: AuthRepository) {
                         }
                     )
                 } else {
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
+                    LaunchedEffect(Unit) {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
                     }
                 }
+            }
+
+            /* 15. SECURITY SCREEN. */
+            composable(Screen.Security.route) {
+                SecurityScreen(
+                    viewModel = sosViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }
@@ -268,12 +301,23 @@ fun NexusApp(authRepository: AuthRepository) {
 /**
  * ViewModelFactory helps create ViewModels that need dependencies.
  */
-class ViewModelFactory(private val repository: AuthRepository) : androidx.lifecycle.ViewModelProvider.Factory {
+class ViewModelFactory(
+    private val authRepository: AuthRepository,
+    private val noticeRepository: NoticeRepository,
+    private val shuttleRepository: ShuttleRepository,
+    private val sosRepository: SosRepository
+) : androidx.lifecycle.ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return AuthViewModel(repository) as T
+        return when {
+            modelClass.isAssignableFrom(AuthViewModel::class.java) -> 
+                AuthViewModel(authRepository) as T
+            modelClass.isAssignableFrom(DashboardViewModel::class.java) -> 
+                DashboardViewModel(noticeRepository, shuttleRepository) as T
+            modelClass.isAssignableFrom(ShuttleViewModel::class.java) -> 
+                ShuttleViewModel(shuttleRepository) as T
+            modelClass.isAssignableFrom(SosViewModel::class.java) -> 
+                SosViewModel(sosRepository) as T
+            else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

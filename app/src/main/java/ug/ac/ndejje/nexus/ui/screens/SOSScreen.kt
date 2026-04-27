@@ -13,12 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.viewmodel.SosUiState
 import ug.ac.ndejje.nexus.viewmodel.SosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SOSScreen(
+    user: User,
     viewModel: SosViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToConfirmation: () -> Unit
@@ -43,12 +45,12 @@ fun SOSScreen(
             )
         }
     ) { padding ->
-        SOSContent(viewModel = viewModel, modifier = Modifier.padding(padding))
+        SOSContent(user = user, viewModel = viewModel, modifier = Modifier.padding(padding))
     }
 }
 
 @Composable
-fun SOSContent(viewModel: SosViewModel, modifier: Modifier = Modifier) {
+fun SOSContent(user: User, viewModel: SosViewModel, modifier: Modifier = Modifier) {
     val sosState by viewModel.sosState.collectAsState()
 
     Column(
@@ -64,18 +66,18 @@ fun SOSContent(viewModel: SosViewModel, modifier: Modifier = Modifier) {
             }
             is SosUiState.Error -> {
                 Text(text = state.message, color = MaterialTheme.colorScheme.error)
-                Button(onClick = { viewModel.triggerSos() }) { Text("Retry") }
+                Button(onClick = { viewModel.triggerSos(user) }) { Text("Retry") }
             }
             else -> {
                 Text(text = "Press to trigger emergency alert", style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = { viewModel.triggerSos() },
+                    onClick = { viewModel.triggerSos(user) },
                     modifier = Modifier.size(200.dp),
                     shape = androidx.compose.foundation.shape.CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(text = "SOS", style = MaterialTheme.typography.headlineLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    Text(text = "SOS", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
                 }
             }
         }

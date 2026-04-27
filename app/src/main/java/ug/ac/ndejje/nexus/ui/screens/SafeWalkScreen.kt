@@ -9,11 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.viewmodel.SosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SafeWalkScreen(
+    user: User,
     viewModel: SosViewModel,
     onNavigateBack: () -> Unit
 ) {
@@ -29,12 +31,12 @@ fun SafeWalkScreen(
             )
         }
     ) { padding ->
-        SafeWalkContent(viewModel = viewModel, modifier = Modifier.padding(padding))
+        SafeWalkContent(user = user, viewModel = viewModel, modifier = Modifier.padding(padding))
     }
 }
 
 @Composable
-fun SafeWalkContent(viewModel: SosViewModel, modifier: Modifier = Modifier) {
+fun SafeWalkContent(user: User, viewModel: SosViewModel, modifier: Modifier = Modifier) {
     var timerRunning by remember { mutableStateOf(false) }
     var timeLeft by remember { mutableIntStateOf(600) } 
 
@@ -45,7 +47,7 @@ fun SafeWalkContent(viewModel: SosViewModel, modifier: Modifier = Modifier) {
                 timeLeft--
             }
             if (timeLeft == 0) {
-                viewModel.triggerSos()
+                viewModel.triggerSos(user)
                 timerRunning = false
             }
         }

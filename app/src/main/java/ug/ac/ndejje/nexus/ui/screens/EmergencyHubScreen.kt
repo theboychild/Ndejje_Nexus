@@ -2,17 +2,22 @@ package ug.ac.ndejje.nexus.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.viewmodel.SosUiState
 import ug.ac.ndejje.nexus.viewmodel.SosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmergencyHubScreen(
+    user: User,
     viewModel: SosViewModel,
-    onNavigateToConfirmation: () -> Unit
+    onNavigateToConfirmation: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("SOS", "Safe Walk")
@@ -28,7 +33,12 @@ fun EmergencyHubScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Emergency Hub") }
+                title = { Text("Emergency Hub") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
     ) { padding ->
@@ -44,8 +54,8 @@ fun EmergencyHubScreen(
             }
             
             when (selectedTab) {
-                0 -> SOSContent(viewModel = viewModel)
-                1 -> SafeWalkContent(viewModel = viewModel)
+                0 -> SOSContent(user = user, viewModel = viewModel)
+                1 -> SafeWalkContent(user = user, viewModel = viewModel)
             }
         }
     }

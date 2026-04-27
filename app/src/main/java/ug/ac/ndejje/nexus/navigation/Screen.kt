@@ -1,7 +1,6 @@
 package ug.ac.ndejje.nexus.navigation
 
 sealed class Screen(val route: String) {
-    object Splash : Screen("splash")
     object Login : Screen("login")
     object Register : Screen("register")
     object Dashboard : Screen("dashboard")
@@ -15,4 +14,5 @@ sealed class Screen(val route: String) {
     object SeatReservation : Screen("seat_reservation")
     object SosConfirmation : Screen("sos_confirmation")
     object SafeWalk : Screen("safe_walk")
+    object Security : Screen("security")
 }

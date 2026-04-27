@@ -17,6 +17,7 @@ import ug.ac.ndejje.nexus.repository.AuthRepository
 sealed class AuthUiState {
     object Idle : AuthUiState()
     object Loading : AuthUiState()
+    object RegistrationSuccess : AuthUiState() // Added for clear registration feedback
     data class Success(val user: User? = null) : AuthUiState()
     data class Error(val message: String) : AuthUiState()
 }
@@ -24,6 +25,8 @@ sealed class AuthUiState {
 class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     private val _authState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val authState: StateFlow<AuthUiState> = _authState
+
+    val currentUser: StateFlow<User?> = repository.currentUser
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
@@ -42,7 +45,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     fun register(user: User) {
-        if (user.email.isBlank() || user.password.isBlank() || user.name.isBlank() || user.regNumber.isBlank()) {
+        if (user.email.isBlank() || user.password.isBlank() || user.name.isBlank() || 
+            user.regNumber.isBlank() || user.program.isBlank() || user.faculty.isBlank()) {
             _authState.value = AuthUiState.Error("All fields are required")
             return
         }
@@ -50,7 +54,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             _authState.value = AuthUiState.Loading
             val result = repository.register(user)
             if (result.isSuccess) {
-                _authState.value = AuthUiState.Success()
+                _authState.value = AuthUiState.RegistrationSuccess
             } else {
                 _authState.value = AuthUiState.Error(result.exceptionOrNull()?.message ?: "Registration failed")
             }
