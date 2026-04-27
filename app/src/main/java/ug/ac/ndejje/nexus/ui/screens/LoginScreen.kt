@@ -26,6 +26,13 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
+
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            onLoginSuccess()
+        }
+    }
 
     LaunchedEffect(authState) {
         if (authState is AuthUiState.Success) {
