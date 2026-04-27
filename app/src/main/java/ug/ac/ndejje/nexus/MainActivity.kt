@@ -140,6 +140,9 @@ fun NexusApp(
                     },
                     onNavigateToSecurity = {
                         navController.navigate(Screen.Security.route)
+                    },
+                    onNavigateToTransport = {
+                        navController.navigate(Screen.Transport.route)
                     }
                 )
             }
