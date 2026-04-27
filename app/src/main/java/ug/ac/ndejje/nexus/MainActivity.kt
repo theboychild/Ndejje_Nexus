@@ -202,10 +202,14 @@ fun NexusApp(
 
             /* 7. SHUTTLE HUB. */
             composable(Screen.ShuttleTracker.route) {
-                ShuttleHubScreen(
-                    viewModel = shuttleViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    ShuttleHubScreen(
+                        user = user,
+                        viewModel = shuttleViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 8. EMERGENCY HUB. */

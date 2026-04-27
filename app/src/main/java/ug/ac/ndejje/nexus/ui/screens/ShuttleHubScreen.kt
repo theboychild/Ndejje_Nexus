@@ -7,11 +7,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.viewmodel.ShuttleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShuttleHubScreen(
+    user: User,
     viewModel: ShuttleViewModel,
     onNavigateBack: () -> Unit
 ) {
@@ -45,7 +47,7 @@ fun ShuttleHubScreen(
                 0 -> ShuttleTrackerContent(viewModel = viewModel)
                 1 -> ShuttleScheduleContent()
                 2 -> RouteMapContent()
-                3 -> SeatReservationContent()
+                3 -> SeatReservationScreen(user = user, viewModel = viewModel, onNavigateBack = onNavigateBack)
             }
         }
     }
