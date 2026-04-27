@@ -32,23 +32,28 @@ fun RouteMapScreen(onNavigateBack: () -> Unit) {
 
 @Composable
 fun RouteMapContent(modifier: Modifier = Modifier) {
-    val mainCampus = LatLng(0.8354, 32.5055)
+    val mainCampus = LatLng(0.8354, 32.5055) 
+    val kampalaCampus = LatLng(0.3112, 32.5811)
+
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(mainCampus, 12f)
+        position = CameraPosition.fromLatLngZoom(mainCampus, 10f)
     }
 
     GoogleMap(
         modifier = modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        properties = MapProperties(isMyLocationEnabled = false),
+        uiSettings = MapUiSettings(zoomControlsEnabled = true)
     ) {
         Marker(
             state = rememberMarkerState(position = mainCampus),
-            title = "Main Campus",
-            snippet = "Pickup Point"
+            title = "Main Campus (Luwero)",
+            snippet = "Main Shuttle Hub"
         )
         Marker(
-            state = rememberMarkerState(position = LatLng(0.3112, 32.5811)),
-            title = "Kampala Campus"
+            state = rememberMarkerState(position = kampalaCampus),
+            title = "Kampala Campus",
+            snippet = "City Hub"
         )
     }
 }

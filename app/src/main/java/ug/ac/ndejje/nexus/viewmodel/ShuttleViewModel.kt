@@ -1,18 +1,12 @@
-/* 
- * This file contains the "Shuttle ViewModel."
- * This "Brain" is responsible for tracking the university bus. It continuously 
- * updates the bus's GPS coordinates and calculates how many minutes are left 
- * until it reaches the student.
- */
 package ug.ac.ndejje.nexus.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ug.ac.ndejje.nexus.repository.ShuttleRepository
 
 sealed class ShuttleUiState {
     object Idle : ShuttleUiState()
@@ -24,7 +18,7 @@ sealed class ShuttleUiState {
     data class Error(val message: String) : ShuttleUiState()
 }
 
-class ShuttleViewModel : ViewModel() {
+class ShuttleViewModel(private val repository: ShuttleRepository) : ViewModel() {
     private val _shuttleState = MutableStateFlow<ShuttleUiState>(ShuttleUiState.Idle)
     val shuttleState: StateFlow<ShuttleUiState> = _shuttleState
 
@@ -35,11 +29,20 @@ class ShuttleViewModel : ViewModel() {
     private fun observeShuttle() {
         viewModelScope.launch {
             _shuttleState.value = ShuttleUiState.Loading
-            delay(1000)
-            _shuttleState.value = ShuttleUiState.Success(
-                busPosition = LatLng(0.5733, 32.5433),
-                eta = 15
-            )
+            val result = repository.getLiveShuttleInfo()
+            if (result.isSuccess) {
+                val info = result.getOrNull()
+                if (info != null) {
+                    _shuttleState.value = ShuttleUiState.Success(
+                        busPosition = info.position,
+                        eta = info.eta
+                    )
+                } else {
+                    _shuttleState.value = ShuttleUiState.Error("No shuttle currently active.")
+                }
+            } else {
+                _shuttleState.value = ShuttleUiState.Error("Failed to track shuttle.")
+            }
         }
     }
 }

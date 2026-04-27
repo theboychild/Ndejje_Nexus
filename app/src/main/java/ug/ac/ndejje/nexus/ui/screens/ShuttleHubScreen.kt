@@ -2,6 +2,8 @@ package ug.ac.ndejje.nexus.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -10,7 +12,8 @@ import ug.ac.ndejje.nexus.viewmodel.ShuttleViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShuttleHubScreen(
-    viewModel: ShuttleViewModel
+    viewModel: ShuttleViewModel,
+    onNavigateBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("Tracker", "Schedule", "Route", "Reservation")
@@ -18,7 +21,12 @@ fun ShuttleHubScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Shuttle Hub") }
+                title = { Text("Shuttle Hub") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
     ) { padding ->

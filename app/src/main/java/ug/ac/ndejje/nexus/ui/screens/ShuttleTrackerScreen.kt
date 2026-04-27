@@ -1,8 +1,6 @@
 package ug.ac.ndejje.nexus.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -11,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -49,7 +48,7 @@ fun ShuttleTrackerContent(
 
     val kampala = LatLng(0.3112, 32.5811)
     val luwero = LatLng(0.8354, 32.5055)
-    
+
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
             is ShuttleUiState.Loading -> {
@@ -57,12 +56,13 @@ fun ShuttleTrackerContent(
             }
             is ShuttleUiState.Success -> {
                 val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(state.busPosition, 10f)
+                    position = CameraPosition.fromLatLngZoom(state.busPosition, 12f)
                 }
 
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState
+                    cameraPositionState = cameraPositionState,
+                    uiSettings = MapUiSettings(zoomControlsEnabled = true)
                 ) {
                     Marker(
                         state = rememberMarkerState(position = state.busPosition),
@@ -74,9 +74,20 @@ fun ShuttleTrackerContent(
                 }
             }
             is ShuttleUiState.Error -> {
-                Text(text = state.message, modifier = Modifier.align(Alignment.Center))
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = { /* ViewModel handles initial load */ }) {
+                        Text("Retry")
+                    }
+                }
             }
-            ShuttleUiState.Idle -> {}
+            ShuttleUiState.Idle -> {
+                Text("Waiting for shuttle data...", modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 }

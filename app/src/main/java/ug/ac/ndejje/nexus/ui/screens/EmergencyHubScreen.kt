@@ -2,6 +2,8 @@ package ug.ac.ndejje.nexus.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,7 +14,8 @@ import ug.ac.ndejje.nexus.viewmodel.SosViewModel
 @Composable
 fun EmergencyHubScreen(
     viewModel: SosViewModel,
-    onNavigateToConfirmation: () -> Unit
+    onNavigateToConfirmation: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("SOS", "Safe Walk")
@@ -28,7 +31,12 @@ fun EmergencyHubScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Emergency Hub") }
+                title = { Text("Emergency Hub") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
     ) { padding ->

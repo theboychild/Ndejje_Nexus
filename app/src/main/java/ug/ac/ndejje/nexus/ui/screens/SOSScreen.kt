@@ -75,7 +75,7 @@ fun SOSContent(viewModel: SosViewModel, modifier: Modifier = Modifier) {
                     shape = androidx.compose.foundation.shape.CircleShape,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(text = "SOS", style = MaterialTheme.typography.headlineLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    Text(text = "SOS", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
                 }
             }
         }
