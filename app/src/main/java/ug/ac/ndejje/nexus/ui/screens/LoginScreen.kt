@@ -22,7 +22,8 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    onNavigateToSecurity: () -> Unit
+    onNavigateToSecurity: () -> Unit,
+    onNavigateToTransport: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -117,12 +118,25 @@ fun LoginScreen(
             }
         }
 
-        // Security Access at the bottom right
-        TextButton(
-            onClick = onNavigateToSecurity,
-            modifier = Modifier.align(Alignment.BottomEnd)
+        // Bottom row for Driver and Security Access
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
         ) {
-            Text("Security Access", color = MaterialTheme.colorScheme.secondary)
+            TextButton(
+                onClick = onNavigateToTransport,
+                modifier = Modifier.align(Alignment.BottomStart)
+            ) {
+                Text("Driver", color = MaterialTheme.colorScheme.secondary)
+            }
+
+            TextButton(
+                onClick = onNavigateToSecurity,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            ) {
+                Text("Security Access", color = MaterialTheme.colorScheme.secondary)
+            }
         }
     }
 }

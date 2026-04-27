@@ -15,4 +15,5 @@ sealed class Screen(val route: String) {
     object SosConfirmation : Screen("sos_confirmation")
     object SafeWalk : Screen("safe_walk")
     object Security : Screen("security")
+    object Transport : Screen("transport")
 }
