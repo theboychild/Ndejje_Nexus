@@ -80,6 +80,7 @@ fun NexusApp(
         Screen.Register.route -> false
         Screen.ForgotPassword.route -> false
         Screen.Security.route -> false
+        Screen.Transport.route -> false
         null -> false
         else -> true
     }
@@ -297,6 +298,14 @@ fun NexusApp(
             composable(Screen.Security.route) {
                 SecurityScreen(
                     viewModel = sosViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            /* 16. TRANSPORT SCREEN (Driver). */
+            composable(Screen.Transport.route) {
+                TransportScreen(
+                    viewModel = shuttleViewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
