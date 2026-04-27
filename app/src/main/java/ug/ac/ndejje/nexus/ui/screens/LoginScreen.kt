@@ -21,7 +21,8 @@ fun LoginScreen(
     viewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit
+    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToSecurity: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -109,6 +110,12 @@ fun LoginScreen(
             TextButton(onClick = onNavigateToRegister) {
                 Text("Register")
             }
+        }
+        
+        Spacer(modifier = Modifier.weight(1f))
+        
+        TextButton(onClick = onNavigateToSecurity) {
+            Text("Security Access", color = MaterialTheme.colorScheme.secondary)
         }
     }
 }

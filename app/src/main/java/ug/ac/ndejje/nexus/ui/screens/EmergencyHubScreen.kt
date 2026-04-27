@@ -7,12 +7,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.viewmodel.SosUiState
 import ug.ac.ndejje.nexus.viewmodel.SosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmergencyHubScreen(
+    user: User,
     viewModel: SosViewModel,
     onNavigateToConfirmation: () -> Unit,
     onNavigateBack: () -> Unit
@@ -52,8 +54,8 @@ fun EmergencyHubScreen(
             }
             
             when (selectedTab) {
-                0 -> SOSContent(viewModel = viewModel)
-                1 -> SafeWalkContent(viewModel = viewModel)
+                0 -> SOSContent(user = user, viewModel = viewModel)
+                1 -> SafeWalkContent(user = user, viewModel = viewModel)
             }
         }
     }

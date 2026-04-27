@@ -25,9 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ug.ac.ndejje.nexus.navigation.Screen
-import ug.ac.ndejje.nexus.repository.AuthRepository
-import ug.ac.ndejje.nexus.repository.NoticeRepository
-import ug.ac.ndejje.nexus.repository.ShuttleRepository
+import ug.ac.ndejje.nexus.repository.*
 import ug.ac.ndejje.nexus.model.User
 import ug.ac.ndejje.nexus.ui.screens.*
 import ug.ac.ndejje.nexus.ui.theme.NexusTheme
@@ -37,13 +35,14 @@ class MainActivity : ComponentActivity() {
     private val authRepository = AuthRepository()
     private val noticeRepository = NoticeRepository()
     private val shuttleRepository = ShuttleRepository()
+    private val sosRepository = SosRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             NexusTheme {
-                NexusApp(authRepository, noticeRepository, shuttleRepository)
+                NexusApp(authRepository, noticeRepository, shuttleRepository, sosRepository)
             }
         }
     }
@@ -56,16 +55,17 @@ class MainActivity : ComponentActivity() {
 fun NexusApp(
     authRepository: AuthRepository,
     noticeRepository: NoticeRepository,
-    shuttleRepository: ShuttleRepository
+    shuttleRepository: ShuttleRepository,
+    sosRepository: SosRepository
 ) {
     val navController = rememberNavController()
-    val factory = ViewModelFactory(authRepository, noticeRepository, shuttleRepository)
+    val factory = ViewModelFactory(authRepository, noticeRepository, shuttleRepository, sosRepository)
     
     /* We initialize the ViewModels. */
     val authViewModel: AuthViewModel = viewModel(factory = factory)
     val dashboardViewModel: DashboardViewModel = viewModel(factory = factory)
     val shuttleViewModel: ShuttleViewModel = viewModel(factory = factory)
-    val sosViewModel: SosViewModel = viewModel()
+    val sosViewModel: SosViewModel = viewModel(factory = factory)
     val profileViewModel: ProfileViewModel = viewModel()
     
     /* We "Watch" the current user from the repository. */
@@ -78,6 +78,7 @@ fun NexusApp(
         Screen.Login.route -> false
         Screen.Register.route -> false
         Screen.ForgotPassword.route -> false
+        Screen.Security.route -> false
         null -> false
         else -> true
     }
@@ -133,6 +134,9 @@ fun NexusApp(
                     },
                     onNavigateToForgotPassword = {
                         navController.navigate(Screen.ForgotPassword.route)
+                    },
+                    onNavigateToSecurity = {
+                        navController.navigate(Screen.Security.route)
                     }
                 )
             }
@@ -199,23 +203,31 @@ fun NexusApp(
 
             /* 8. EMERGENCY HUB. */
             composable(Screen.SOS.route) {
-                EmergencyHubScreen(
-                    viewModel = sosViewModel,
-                    onNavigateToConfirmation = {
-                        navController.navigate(Screen.SosConfirmation.route) {
-                            popUpTo(Screen.SOS.route) { inclusive = true }
-                        }
-                    },
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    EmergencyHubScreen(
+                        user = user,
+                        viewModel = sosViewModel,
+                        onNavigateToConfirmation = {
+                            navController.navigate(Screen.SosConfirmation.route) {
+                                popUpTo(Screen.SOS.route) { inclusive = true }
+                            }
+                        },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 9. SOS CONFIRMATION. */
             composable(Screen.SosConfirmation.route) {
-                SosConfirmationScreen(
-                    viewModel = sosViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    SosConfirmationScreen(
+                        user = user,
+                        viewModel = sosViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 10. SHUTTLE SCHEDULE. */
@@ -241,10 +253,14 @@ fun NexusApp(
 
             /* 13. SAFE WALK. */
             composable(Screen.SafeWalk.route) {
-                SafeWalkScreen(
-                    viewModel = sosViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    SafeWalkScreen(
+                        user = user,
+                        viewModel = sosViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 14. PROFILE SCREEN. */
@@ -270,6 +286,14 @@ fun NexusApp(
                     }
                 }
             }
+
+            /* 15. SECURITY SCREEN. */
+            composable(Screen.Security.route) {
+                SecurityScreen(
+                    viewModel = sosViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
@@ -280,7 +304,8 @@ fun NexusApp(
 class ViewModelFactory(
     private val authRepository: AuthRepository,
     private val noticeRepository: NoticeRepository,
-    private val shuttleRepository: ShuttleRepository
+    private val shuttleRepository: ShuttleRepository,
+    private val sosRepository: SosRepository
 ) : androidx.lifecycle.ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         return when {
@@ -290,6 +315,8 @@ class ViewModelFactory(
                 DashboardViewModel(noticeRepository, shuttleRepository) as T
             modelClass.isAssignableFrom(ShuttleViewModel::class.java) -> 
                 ShuttleViewModel(shuttleRepository) as T
+            modelClass.isAssignableFrom(SosViewModel::class.java) -> 
+                SosViewModel(sosRepository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
