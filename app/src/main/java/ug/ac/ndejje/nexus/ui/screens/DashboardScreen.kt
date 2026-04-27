@@ -46,7 +46,7 @@ fun DashboardScreen(
     onNavigateToSOS: () -> Unit,
     onNavigateToTracker: () -> Unit,
     onNavigateToNotices: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
 ) {
     val dashboardState by viewModel.dashboardState.collectAsState()
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -86,7 +87,9 @@ fun NexusApp(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    tonalElevation = 8.dp
+                ) {
                     val items = listOf(
                         Triple("Home", Screen.Dashboard.route, Icons.Default.Home),
                         Triple("Shuttle", Screen.ShuttleTracker.route, Icons.Default.DirectionsBus),
