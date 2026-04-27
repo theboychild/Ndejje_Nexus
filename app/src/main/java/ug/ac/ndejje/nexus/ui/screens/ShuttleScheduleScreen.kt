@@ -10,11 +10,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ug.ac.ndejje.nexus.repository.ShuttleRepository
+import ug.ac.ndejje.nexus.viewmodel.ShuttleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShuttleScheduleScreen(onNavigateBack: () -> Unit) {
+fun ShuttleScheduleScreen(
+    viewModel: ShuttleViewModel,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -27,16 +30,19 @@ fun ShuttleScheduleScreen(onNavigateBack: () -> Unit) {
             )
         }
     ) { padding ->
-        // In a real app, this should probably come from a ViewModel
-        ShuttleScheduleContent(modifier = Modifier.padding(padding))
+        ShuttleScheduleContent(
+            viewModel = viewModel,
+            modifier = Modifier.padding(padding)
+        )
     }
 }
 
 @Composable
-fun ShuttleScheduleContent(modifier: Modifier = Modifier) {
-    // Ideally these would be fetched from a repository/ViewModel
-    // For now, returning an empty list to satisfy "drop demo data"
-    val schedules by remember { mutableStateOf(emptyList<Pair<String, String>>()) }
+fun ShuttleScheduleContent(
+    viewModel: ShuttleViewModel,
+    modifier: Modifier = Modifier
+) {
+    val schedules by viewModel.schedules.collectAsState()
 
     if (schedules.isEmpty()) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {

@@ -24,12 +24,6 @@ fun SeatReservationScreen(
     viewModel: ShuttleViewModel,
     onNavigateBack: () -> Unit
 ) {
-    val reservations by viewModel.reservations.collectAsState()
-    val schedules by viewModel.schedules.collectAsState()
-    
-    // Filter reservations for the current student
-    val myReservations = reservations.filter { it.studentName == user.name }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -42,86 +36,103 @@ fun SeatReservationScreen(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                Text(
-                    "New Reservation",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+        SeatReservationContent(
+            user = user,
+            viewModel = viewModel,
+            modifier = Modifier.padding(padding)
+        )
+    }
+}
 
-            if (schedules.isEmpty()) {
-                item { Text("No active routes for reservation.") }
-            } else {
-                items(schedules) { schedule ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+@Composable
+fun SeatReservationContent(
+    user: User,
+    viewModel: ShuttleViewModel,
+    modifier: Modifier = Modifier
+) {
+    val reservations by viewModel.reservations.collectAsState()
+    val schedules by viewModel.schedules.collectAsState()
+    
+    // Filter reservations for the current student
+    val myReservations = reservations.filter { it.studentName == user.name }
+
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            Text(
+                "New Reservation",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        if (schedules.isEmpty()) {
+            item { Text("No active routes for reservation.") }
+        } else {
+            items(schedules) { schedule ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(schedule.first, fontWeight = FontWeight.Bold)
-                                Text(schedule.second, style = MaterialTheme.typography.bodyMedium)
-                            }
-                            Button(onClick = { viewModel.makeReservation(user.name, schedule.first) }) {
-                                Text("Reserve")
-                            }
+                        Column {
+                            Text(schedule.first, fontWeight = FontWeight.Bold)
+                            Text(schedule.second, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Button(onClick = { viewModel.makeReservation(user.name, schedule.first) }) {
+                            Text("Reserve")
                         }
                     }
                 }
             }
+        }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "My Reservations",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "My Reservations",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
-            if (myReservations.isEmpty()) {
-                item { Text("You have no reservations.") }
-            } else {
-                items(myReservations) { reservation ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+        if (myReservations.isEmpty()) {
+            item { Text("You have no reservations.") }
+        } else {
+            items(myReservations) { reservation ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(reservation.route, fontWeight = FontWeight.Bold)
-                                val statusText = when(reservation.status) {
-                                    ReservationStatus.PENDING -> "Pending"
-                                    ReservationStatus.GRANTED -> "Granted"
-                                    ReservationStatus.DENIED -> "Denied"
-                                }
-                                val statusColor = when(reservation.status) {
-                                    ReservationStatus.PENDING -> Color.Gray
-                                    ReservationStatus.GRANTED -> Color.Green
-                                    ReservationStatus.DENIED -> Color.Red
-                                }
-                                Text(
-                                    statusText,
-                                    color = statusColor,
-                                    fontWeight = FontWeight.Bold
-                                )
+                        Column {
+                            Text(reservation.route, fontWeight = FontWeight.Bold)
+                            val statusText = when(reservation.status) {
+                                ReservationStatus.PENDING -> "Pending"
+                                ReservationStatus.GRANTED -> "Granted"
+                                ReservationStatus.DENIED -> "Denied"
                             }
+                            val statusColor = when(reservation.status) {
+                                ReservationStatus.PENDING -> Color.Gray
+                                ReservationStatus.GRANTED -> Color.Green
+                                ReservationStatus.DENIED -> Color.Red
+                            }
+                            Text(
+                                statusText,
+                                color = statusColor,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }

@@ -45,9 +45,9 @@ fun ShuttleHubScreen(
             
             when (selectedTab) {
                 0 -> ShuttleTrackerContent(viewModel = viewModel)
-                1 -> ShuttleScheduleContent()
+                1 -> ShuttleScheduleContent(viewModel = viewModel)
                 2 -> RouteMapContent()
-                3 -> SeatReservationScreen(user = user, viewModel = viewModel, onNavigateBack = onNavigateBack)
+                3 -> SeatReservationContent(user = user, viewModel = viewModel)
             }
         }
     }

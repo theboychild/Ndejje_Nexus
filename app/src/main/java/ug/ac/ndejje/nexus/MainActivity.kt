@@ -244,6 +244,7 @@ fun NexusApp(
             /* 10. SHUTTLE SCHEDULE. */
             composable(Screen.ShuttleSchedule.route) {
                 ShuttleScheduleScreen(
+                    viewModel = shuttleViewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
