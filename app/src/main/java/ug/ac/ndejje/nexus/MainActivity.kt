@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.*
@@ -75,6 +76,8 @@ fun NexusApp(
 
     val showBottomBar = when (currentDestination?.route) {
         Screen.Splash.route -> false
+        Screen.Login.route -> false
+        Screen.Register.route -> false
         Screen.ForgotPassword.route -> false
         null -> false
         else -> true
@@ -120,10 +123,48 @@ fun NexusApp(
             /* 1. SPLASH SCREEN. */
             composable(Screen.Splash.route) {
                 SplashScreen(onNavigateToNext = {
-                    navController.navigate(Screen.Dashboard.route) {
+                    val nextDestination = if (currentUser != null) {
+                        Screen.Dashboard.route
+                    } else {
+                        Screen.Login.route
+                    }
+                    navController.navigate(nextDestination) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 })
+            }
+
+            /* 2. LOGIN SCREEN. */
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    viewModel = authViewModel,
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Dashboard.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.Register.route)
+                    },
+                    onNavigateToForgotPassword = {
+                        navController.navigate(Screen.ForgotPassword.route)
+                    }
+                )
+            }
+            
+            /* 3. REGISTRATION SCREEN. */
+            composable(Screen.Register.route) {
+                RegistrationScreen(
+                    viewModel = authViewModel,
+                    onRegistrationSuccess = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Register.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
             /* 4. FORGOT PASSWORD SCREEN. */
@@ -136,15 +177,23 @@ fun NexusApp(
             
             /* 5. DASHBOARD: Home base. */
             composable(Screen.Dashboard.route) {
-                val user = currentUser ?: User(name = "Guest User")
-                DashboardScreen(
-                    user = user,
-                    viewModel = dashboardViewModel,
-                    onNavigateToSOS = { navController.navigate(Screen.SOS.route) },
-                    onNavigateToTracker = { navController.navigate(Screen.ShuttleTracker.route) },
-                    onNavigateToNotices = { navController.navigate(Screen.NoticeBoard.route) },
-                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
-                )
+                val user = currentUser
+                if (user != null) {
+                    DashboardScreen(
+                        user = user,
+                        viewModel = dashboardViewModel,
+                        onNavigateToSOS = { navController.navigate(Screen.SOS.route) },
+                        onNavigateToTracker = { navController.navigate(Screen.ShuttleTracker.route) },
+                        onNavigateToNotices = { navController.navigate(Screen.NoticeBoard.route) },
+                        onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                    )
+                } else {
+                    LaunchedEffect(Unit) {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Dashboard.route) { inclusive = true }
+                        }
+                    }
+                }
             }
 
             /* 6. NOTICE BOARD. */
@@ -215,18 +264,26 @@ fun NexusApp(
 
             /* 14. PROFILE SCREEN. */
             composable(Screen.Profile.route) {
-                val user = currentUser ?: User(name = "Guest User")
-                ProfileScreen(
-                    user = user,
-                    viewModel = profileViewModel,
-                    onNavigateBack = { navController.popBackStack() },
-                    onLogout = {
-                        authViewModel.logout()
-                        navController.navigate(Screen.Splash.route) {
+                val user = currentUser
+                if (user != null) {
+                    ProfileScreen(
+                        user = user,
+                        viewModel = profileViewModel,
+                        onNavigateBack = { navController.popBackStack() },
+                        onLogout = {
+                            authViewModel.logout()
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    )
+                } else {
+                    LaunchedEffect(Unit) {
+                        navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
                     }
-                )
+                }
             }
         }
     }
