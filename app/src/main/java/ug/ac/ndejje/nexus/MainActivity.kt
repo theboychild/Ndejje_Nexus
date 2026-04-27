@@ -253,9 +253,14 @@ fun NexusApp(
 
             /* 12. SEAT RESERVATION. */
             composable(Screen.SeatReservation.route) {
-                SeatReservationScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                val user = currentUser
+                if (user != null) {
+                    SeatReservationScreen(
+                        user = user,
+                        viewModel = shuttleViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
 
             /* 13. SAFE WALK. */
