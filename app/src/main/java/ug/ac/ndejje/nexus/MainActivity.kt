@@ -75,7 +75,6 @@ fun NexusApp(
     val currentDestination = navBackStackEntry?.destination
 
     val showBottomBar = when (currentDestination?.route) {
-        Screen.Splash.route -> false
         Screen.Login.route -> false
         Screen.Register.route -> false
         Screen.ForgotPassword.route -> false
@@ -116,24 +115,10 @@ fun NexusApp(
     ) { innerPadding ->
         NavHost(
             navController = navController, 
-            startDestination = Screen.Splash.route,
+            startDestination = Screen.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             
-            /* 1. SPLASH SCREEN. */
-            composable(Screen.Splash.route) {
-                SplashScreen(onNavigateToNext = {
-                    val nextDestination = if (currentUser != null) {
-                        Screen.Dashboard.route
-                    } else {
-                        Screen.Login.route
-                    }
-                    navController.navigate(nextDestination) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
-                })
-            }
-
             /* 2. LOGIN SCREEN. */
             composable(Screen.Login.route) {
                 LoginScreen(
