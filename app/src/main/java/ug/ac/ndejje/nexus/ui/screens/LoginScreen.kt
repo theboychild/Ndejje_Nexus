@@ -8,106 +8,135 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import ug.ac.ndejje.nexus.R
-import ug.ac.ndejje.nexus.viewmodel.LoginState
-import ug.ac.ndejje.nexus.viewmodel.LoginViewModel
+import ug.ac.ndejje.nexus.viewmodel.AuthUiState
+import ug.ac.ndejje.nexus.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
+    viewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToSecurity: () -> Unit,
+    onNavigateToTransport: () -> Unit
 ) {
-    var email by remember { mutableStateFlowOf("") }
-    var password by remember { mutableStateFlowOf("") }
-    val loginState by viewModel.loginState.collectAsState()
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val authState by viewModel.authState.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            onLoginSuccess()
+        }
+    }
+
+    LaunchedEffect(authState) {
+        if (authState is AuthUiState.Success) {
             onLoginSuccess()
             viewModel.resetState()
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(24.dp)
     ) {
-        // University Logo
-        Image(
-            painter = painterResource(id = R.drawable.ndejje_badge),
-            contentDescription = "University Logo",
-            modifier = Modifier.size(120.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ndejje_badge),
+                contentDescription = "Logo",
+                modifier = Modifier.size(90.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = "Welcome Back", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(text = "Sign in to continue", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+            
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email Address") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
 
-        Text(
-            text = stringResource(R.string.login_header),
-            style = MaterialTheme.typography.headlineMedium
-        )
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                TextButton(onClick = onNavigateToForgotPassword) {
+                    Text("Forgot Password?")
+                }
+            }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            if (authState is AuthUiState.Error) {
+                Text(
+                    text = (authState as AuthUiState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(R.string.email_hint)) },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(R.string.password_hint)) },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (loginState is LoginState.Loading) {
-            CircularProgressIndicator()
-        } else {
             Button(
                 onClick = { viewModel.login(email, password) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                enabled = authState !is AuthUiState.Loading
             ) {
-                Text(stringResource(R.string.login_button))
+                if (authState is AuthUiState.Loading) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Login")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Don't have an account?")
+                TextButton(onClick = onNavigateToRegister) {
+                    Text("Register")
+                }
             }
         }
 
-        if (loginState is LoginState.Error) {
-            Text(
-                text = (loginState as LoginState.Error).message,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
+        // Bottom row for Driver and Security Access
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            TextButton(
+                onClick = onNavigateToTransport,
+                modifier = Modifier.align(Alignment.BottomStart)
+            ) {
+                Text("Driver", color = MaterialTheme.colorScheme.secondary)
+            }
 
-        TextButton(onClick = { /* TODO: Forgot Password */ }) {
-            Text(stringResource(R.string.forgot_password))
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(onClick = onNavigateToRegister) {
-            Text(stringResource(R.string.register_prompt))
+            TextButton(
+                onClick = onNavigateToSecurity,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            ) {
+                Text("Security Access", color = MaterialTheme.colorScheme.secondary)
+            }
         }
     }
 }
-
-private fun <T> mutableStateFlowOf(value: T) = mutableStateOf(value)

@@ -8,4 +8,12 @@ sealed class Screen(val route: String) {
     object SOS : Screen("sos")
     object NoticeBoard : Screen("notice_board")
     object Profile : Screen("profile")
+    object ForgotPassword : Screen("forgot_password")
+    object ShuttleSchedule : Screen("shuttle_schedule")
+    object RouteMap : Screen("route_map")
+    object SeatReservation : Screen("seat_reservation")
+    object SosConfirmation : Screen("sos_confirmation")
+    object SafeWalk : Screen("safe_walk")
+    object Security : Screen("security")
+    object Transport : Screen("transport")
 }

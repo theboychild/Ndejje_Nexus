@@ -1,62 +1,75 @@
 package ug.ac.ndejje.nexus.ui.screens
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import androidx.compose.ui.unit.dp
+import ug.ac.ndejje.nexus.ui.components.MockMapView
+import ug.ac.ndejje.nexus.viewmodel.ShuttleUiState
+import ug.ac.ndejje.nexus.viewmodel.ShuttleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShuttleTrackerScreen(onNavigateBack: () -> Unit) {
-    val kampala = LatLng(0.3112, 32.5811)
-    val luwero = LatLng(0.8354, 32.5055)
-    
-    // Mock bus position
-    val busPosition = LatLng(0.5733, 32.5433)
-
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(busPosition, 10f)
-    }
-
+fun ShuttleTrackerScreen(
+    viewModel: ShuttleViewModel,
+    onNavigateBack: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Live Shuttle Tracker") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         }
     ) { padding ->
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            cameraPositionState = cameraPositionState
-        ) {
-            Marker(
-                state = MarkerState(position = busPosition),
-                title = "Kampala-Luwero Shuttle",
-                snippet = "ETA: 15 mins"
-            )
-            
-            Marker(
-                state = MarkerState(position = kampala),
-                title = "Kampala Campus"
-            )
-            
-            Marker(
-                state = MarkerState(position = luwero),
-                title = "Main Campus (Luwero)"
-            )
+        ShuttleTrackerContent(viewModel = viewModel, modifier = Modifier.padding(padding))
+    }
+}
+
+@Composable
+fun ShuttleTrackerContent(
+    viewModel: ShuttleViewModel,
+    modifier: Modifier = Modifier
+) {
+    val shuttleState by viewModel.shuttleState.collectAsState()
+    val state = shuttleState
+
+    Box(modifier = modifier.fillMaxSize()) {
+        when (state) {
+            is ShuttleUiState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            is ShuttleUiState.Success -> {
+                MockMapView(
+                    modifier = Modifier.fillMaxSize(),
+                    busLocation = true
+                )
+            }
+            is ShuttleUiState.Error -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = { /* ViewModel handles initial load */ }) {
+                        Text("Retry")
+                    }
+                }
+            }
+            ShuttleUiState.Idle -> {
+                Text("Waiting for shuttle data...", modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 }
