@@ -18,12 +18,12 @@
     <string name="welcome_user">Welcome, %1$s</string>
     <string name="sos_button">SOS ALERT</string>
     <string name="shuttle_tracker">SHUTTLE TRACKER</string>
-    <string name="announcements">ANNOUNCEMENT</string>
+    <string name="announcements">ANNOUNCEMENTS</string>
     <string name="shuttle_eta">ETA: %1$s mins</string>
 
     <string name="sos_notified">Campus Security Notified</string>
     <string name="help_is_near">Help is near. A security officer has been dispatched to your location.</string>
-    <string name="call_security">Call</string>
+    <string name="call_security">Call Security</string>
 
     <string name="notice_all">All</string>
     <string name="notice_academic">Academics</string>
