@@ -30,8 +30,8 @@
     <string name="notice_social">Social</string>
     <string name="notice_financial">Financial</string>
 
-    <string name="settings">Settings</string>
+    <string name="settings">Setting</string>
     <string name="pref_shuttle">Shuttle Notifications</string>
-    <string name="pref_notices">Notice Board Updates</string>
+    <string name="pref_notices">Notice Board </string>
     <string name="pref_sos">Emergency Alerts</string>
 </resources>
