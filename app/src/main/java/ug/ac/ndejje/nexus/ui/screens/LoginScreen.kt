@@ -1,7 +1,6 @@
 package ug.ac.ndejje.nexus.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,7 +26,7 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToSecurity: () -> Unit,
-    onNavigateToTransport: () -> Unit
+    onNavigateToTransport: () -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -58,15 +57,22 @@ fun LoginScreen(
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ndejje_badge),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            Surface(
+                modifier = Modifier.size(110.dp),
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                tonalElevation = 1.dp
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ndejje_badge),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "Welcome Back", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             Text(text = "Sign in to continue", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
             
