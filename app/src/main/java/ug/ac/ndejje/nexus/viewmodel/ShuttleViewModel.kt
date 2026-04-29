@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ug.ac.ndejje.nexus.repository.Reservation
 import ug.ac.ndejje.nexus.repository.ReservationStatus
@@ -17,7 +15,7 @@ sealed class ShuttleUiState {
     object Loading : ShuttleUiState()
     data class Success(
         val busPosition: LatLng,
-        val eta: Int
+        val eta: Int,
     ) : ShuttleUiState()
     data class Error(val message: String) : ShuttleUiState()
 }
