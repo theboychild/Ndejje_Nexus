@@ -8,7 +8,7 @@
     <string name="register_prompt">No account? Register</string>
 
     <string name="register_header">Register</string>
-    <string name="name_hint">Whole Name</string>
+    <string name="name_idea">Whole Name</string>
     <string name="reg_number_hint">Registration Number</string>
     <string name="faculty_hint">Faculty</string>
     <string name="level_hint">Level</string>
