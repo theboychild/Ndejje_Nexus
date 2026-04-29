@@ -60,7 +60,9 @@ fun NexusApp(
     sosRepository: SosRepository
 ) {
     val navController = rememberNavController()
-    val factory = ViewModelFactory(authRepository, noticeRepository, shuttleRepository, sosRepository)
+    val factory = remember { 
+        ViewModelFactory(authRepository, noticeRepository, shuttleRepository, sosRepository) 
+    }
     
     /* We initialize the ViewModels. */
     val authViewModel: AuthViewModel = viewModel(factory = factory)
@@ -85,44 +87,14 @@ fun NexusApp(
         else -> true
     }
 
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                NavigationBar(
-                    tonalElevation = 8.dp
-                ) {
-                    val items = listOf(
-                        Triple("Home", Screen.Dashboard.route, Icons.Default.Home),
-                        Triple("Shuttle", Screen.ShuttleTracker.route, Icons.Default.DirectionsBus),
-                        Triple("SOS", Screen.SOS.route, Icons.Default.Warning),
-                        Triple("Notices", Screen.NoticeBoard.route, Icons.Default.Notifications),
-                        Triple("Profile", Screen.Profile.route, Icons.Default.Person)
-                    )
-                    items.forEach { (label, route, icon) ->
-                        NavigationBarItem(
-                            icon = { Icon(icon, contentDescription = label) },
-                            label = { Text(label) },
-                            selected = currentDestination?.hierarchy?.any { it.route == route } == true,
-                            onClick = {
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController, 
-            startDestination = Screen.Login.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
+    // Use a Column to hold NavHost and BottomBar to avoid nested Scaffold shaking
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f)) {
+            NavHost(
+                navController = navController, 
+                startDestination = Screen.Login.route,
+            ) {
+                // ... (rest of the NavHost content remains same)
             
             /* 2. LOGIN SCREEN. */
             composable(Screen.Login.route) {
