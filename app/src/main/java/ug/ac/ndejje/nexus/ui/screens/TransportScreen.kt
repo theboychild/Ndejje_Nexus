@@ -45,7 +45,8 @@ fun TransportScreen(
             FloatingActionButton(onClick = { showAddScheduleDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Schedule")
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         LazyColumn(
             modifier = Modifier

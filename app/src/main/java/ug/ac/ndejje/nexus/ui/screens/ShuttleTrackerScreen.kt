@@ -30,7 +30,8 @@ fun ShuttleTrackerScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         ShuttleTrackerContent(viewModel = viewModel, modifier = Modifier.padding(padding))
     }

@@ -1,6 +1,7 @@
 package ug.ac.ndejje.nexus.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,7 +31,8 @@ fun ShuttleHubScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             TabRow(selectedTabIndex = selectedTab) {

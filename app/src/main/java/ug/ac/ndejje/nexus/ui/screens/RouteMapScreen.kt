@@ -1,5 +1,6 @@
 package ug.ac.ndejje.nexus.ui.screens
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -22,7 +23,8 @@ fun RouteMapScreen(onNavigateBack: () -> Unit) {
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         RouteMapContent(modifier = Modifier.padding(padding))
     }

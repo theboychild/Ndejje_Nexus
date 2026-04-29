@@ -74,7 +74,8 @@ fun DashboardScreen(
                     containerColor = Color.Transparent
                 )
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0) // Fix for nested Scaffold shaking
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -221,7 +222,7 @@ fun SOSCard(onClick: () -> Unit) {
                     modifier = Modifier.size(32.dp)
                 )
                 Text(
-                    text = stringResource(R.string.sos_button),
+                    text = "SOS ALERT",
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
