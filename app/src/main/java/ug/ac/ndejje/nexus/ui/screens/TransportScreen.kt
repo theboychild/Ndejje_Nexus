@@ -1,6 +1,5 @@
 package ug.ac.ndejje.nexus.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,7 +24,7 @@ import ug.ac.ndejje.nexus.viewmodel.ShuttleViewModel
 @Composable
 fun TransportScreen(
     viewModel: ShuttleViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val reservations by viewModel.reservations.collectAsState()
     val schedules by viewModel.schedules.collectAsState()

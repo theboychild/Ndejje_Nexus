@@ -56,7 +56,7 @@ fun DashboardScreen(
                 title = { 
                     Text(
                         "Ndejje Nexus",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     ) 
                 },
                 actions = {
@@ -153,7 +153,8 @@ fun DashboardScreen(
 @Composable
 fun GreetingSection(userName: String) {
     val greeting = remember {
-        when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+        val calendar = Calendar.getInstance()
+        when (calendar.get(Calendar.HOUR_OF_DAY)) {
             in 0..11 -> "Good morning,"
             in 12..16 -> "Good afternoon,"
             else -> "Good evening,"
