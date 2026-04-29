@@ -2,10 +2,15 @@ package ug.ac.ndejje.nexus.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Ndejje University Inspired Colors
+val NdejjeGreen = Color(0xFF2E7D32)
+val NdejjeGreenLight = Color(0xFF60AD5E)
+val NdejjeGreenDark = Color(0xFF005005)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val NdejjeYellow = Color(0xFFFFD600)
+val NdejjeYellowLight = Color(0xFFFFFF52)
+val NdejjeYellowDark = Color(0xFFC6A600)
+
+val DarkBackground = Color(0xFF121212)
+val DarkSurface = Color(0xFF1E1E1E)
+val DarkOnSurface = Color(0xFFE1E1E1)

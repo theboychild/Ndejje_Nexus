@@ -11,10 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -87,14 +84,45 @@ fun NexusApp(
         else -> true
     }
 
-    // Use a Column to hold NavHost and BottomBar to avoid nested Scaffold shaking
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.weight(1f)) {
-            NavHost(
-                navController = navController, 
-                startDestination = Screen.Login.route,
-            ) {
-                // ... (rest of the NavHost content remains same)
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                NavigationBar(
+                    tonalElevation = 8.dp
+                ) {
+                    val items = listOf(
+                        Triple("Home", Screen.Dashboard.route, Icons.Default.Home),
+                        Triple("Shuttle", Screen.ShuttleTracker.route, Icons.Default.DirectionsBus),
+                        Triple("SOS", Screen.SOS.route, Icons.Default.Warning),
+                        Triple("Notices", Screen.NoticeBoard.route, Icons.Default.Notifications),
+                        Triple("Profile", Screen.Profile.route, Icons.Default.Person)
+                    )
+                    items.forEach { (label, route, icon) ->
+                        NavigationBarItem(
+                            icon = { Icon(icon, contentDescription = label) },
+                            label = { Text(label) },
+                            selected = currentDestination?.hierarchy?.any { it.route == route } == true,
+                            onClick = {
+                                navController.navigate(route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0) // Key fix: prevent Scaffold from consuming insets
+    ) { innerPadding ->
+        NavHost(
+            navController = navController, 
+            startDestination = Screen.Login.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
             
             /* 2. LOGIN SCREEN. */
             composable(Screen.Login.route) {
