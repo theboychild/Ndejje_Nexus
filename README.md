@@ -15,8 +15,6 @@ Emergency Hub (SOS)
 •	Instant SOS: A high-priority one-tap button that immediately notifies campus security with the student’s location and profile details.
 •	Safe Walk Timer: A proactive safety feature that triggers an automatic SOS if a student fails to mark themselves as "Safe" before a user-defined timer expires.
 •	Security Interface: A dedicated monitoring dashboard for security staff to track and respond to active alerts in real-time.
-
-
 Notice Board
 •	Categorized Announcements: I organized the board into Academic, Social, and Financial streams to reduce information noise.
 •	Push-Style Updates: Real-time updates ensure the student body never misses critical deadlines or university news.
