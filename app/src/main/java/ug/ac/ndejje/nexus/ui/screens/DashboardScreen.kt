@@ -108,7 +108,7 @@ fun DashboardScreen(
                         ShuttleTrackerCard(state.nextShuttleEta, onNavigateToTracker)
                     }
 
-                    // 4.
+                    // 4. Vertical Announcements List
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -145,7 +145,7 @@ fun DashboardScreen(
                 DashboardUiState.Idle -> {}
             }
             
-            // Extra spacing at bottom
+            // Extra spacing at bottom page
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
