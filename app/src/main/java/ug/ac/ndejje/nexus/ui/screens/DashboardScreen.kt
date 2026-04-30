@@ -108,7 +108,7 @@ fun DashboardScreen(
                         ShuttleTrackerCard(state.nextShuttleEta, onNavigateToTracker)
                     }
 
-                    // 4. Vertical Announcements List
+                    // 4.
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
