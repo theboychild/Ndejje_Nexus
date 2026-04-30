@@ -27,7 +27,7 @@ fun MockMapView(
             .fillMaxSize()
             .background(Color(0xFFE0E0E0)) // Light gray background to simulate map
     ) {
-        // Grid lines to look like a map
+        /
         Column(Modifier.fillMaxSize()) {
             repeat(10) {
                 Spacer(modifier = Modifier.weight(1f))
@@ -56,7 +56,8 @@ fun MockMapView(
         )
 
         if (busLocation) {
-            // Simulated Bus Location MapMarker(
+            // Simulated Bus Location
+            MapMarker(
                 modifier = Modifier.align(Alignment.TopEnd).padding(top = 80.dp, end = 60.dp),
                 label = "Shuttle",
                 color = Color.Red,
