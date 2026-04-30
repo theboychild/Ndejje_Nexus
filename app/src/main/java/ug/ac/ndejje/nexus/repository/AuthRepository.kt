@@ -1,11 +1,3 @@
-/* 
- * This file contains the "Auth Repository."
- * Think of this as the app's "Secretary" or "Record Keeper."
- * Its job is to handle the "Paperwork" for logging in, signing up, and keeping 
- * track of which student is currently using the phone.
- * 
- * NOTE: This uses an in-memory list (Simulated Database) to store users.
- */
 package ug.ac.ndejje.nexus.repository
 
 import kotlinx.coroutines.delay
@@ -14,19 +6,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ug.ac.ndejje.nexus.model.User
 
-class AuthRepository {
-    /* "currentUser" tracks the student currently logged in. */
+/**
+ * Singleton repository for Authentication.
+ * Using 'object' ensures it survives Activity recreations and maintains the "simulated DB".
+ */
+object AuthRepository {
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
     
-    /* SIMULATED DATABASE: "users" is our list of registered students. */
     private val users = mutableListOf<User>()
 
-    /**
-     * login checks if the email and password match someone in our records.
-     */
     suspend fun login(email: String, password: String): Result<User> {
-        delay(1000) // Simulating network/DB delay
+        delay(1000)
         val cleanEmail = email.trim().lowercase()
         val user = users.find { (it.email.lowercase() == cleanEmail) && (it.password == password) }
         
@@ -38,46 +29,26 @@ class AuthRepository {
         }
     }
 
-    /**
-     * register adds a new student to our records (The DB).
-     */
     suspend fun register(user: User): Result<Unit> {
-        delay(1000) // Simulating network/DB delay
+        delay(1000)
         val cleanEmail = user.email.trim().lowercase()
-        
-        /* Ensure the email isn't already taken in our "Database". */
         if (users.any { it.email.lowercase() == cleanEmail }) {
             return Result.failure(Exception("An account with this email already exists."))
         }
-        
         val cleanUser = user.copy(email = cleanEmail)
-        users.add(cleanUser) // Saving to the DB
+        users.add(cleanUser)
         return Result.success(Unit)
     }
 
-    /**
-     * sendPasswordResetEmail handles the logic for resetting a password.
-     */
     suspend fun sendPasswordResetEmail(email: String): Result<Unit> {
         delay(1000)
         val cleanEmail = email.trim().lowercase()
         val userExists = users.any { it.email.lowercase() == cleanEmail }
-        
-        return if (userExists) {
-            Result.success(Unit)
-        } else {
-            Result.failure(Exception("Email not found in our records."))
-        }
+        return if (userExists) Result.success(Unit) else Result.failure(Exception("Email not found."))
     }
 
-    /**
-     * Returns the info of the student who is currently logged in.
-     */
     fun getCurrentUser(): User? = _currentUser.value
 
-    /**
-     * logout signs the student out.
-     */
     fun logout() {
         _currentUser.value = null
     }

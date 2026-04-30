@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ import ug.ac.ndejje.nexus.viewmodel.AuthViewModel
 fun RegistrationScreen(
     viewModel: AuthViewModel,
     onRegistrationSuccess: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var regNumber by remember { mutableStateOf("") }
@@ -33,9 +34,9 @@ fun RegistrationScreen(
     var password by remember { mutableStateOf("") }
 
     // Dropdown States
-    var facultyExpanded by remember { mutableStateOf(false) }
-    var levelExpanded by remember { mutableStateOf(false) }
-    var programExpanded by remember { mutableStateOf(false) }
+    var facultyExpanded by remember { mutableStateOf(value = false) }
+    var levelExpanded by remember { mutableStateOf(value = false) }
+    var programExpanded by remember { mutableStateOf(value = false) }
 
     val authState by viewModel.authState.collectAsState()
     val context = LocalContext.current
@@ -56,7 +57,7 @@ fun RegistrationScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
         },
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
@@ -97,7 +98,7 @@ fun RegistrationScreen(
                     readOnly = true,
                     label = { Text("Level of Study") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = levelExpanded,
@@ -128,7 +129,7 @@ fun RegistrationScreen(
                     readOnly = true,
                     label = { Text("Faculty") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = facultyExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = facultyExpanded,
@@ -164,7 +165,7 @@ fun RegistrationScreen(
                     enabled = faculty.isNotEmpty(),
                     label = { Text("Course of Study") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = programExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                 )
                 ExposedDropdownMenu(
                     expanded = programExpanded,

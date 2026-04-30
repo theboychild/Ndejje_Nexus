@@ -65,7 +65,7 @@ fun DashboardScreen(
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
                     ) {
                         Icon(Icons.Default.Person, contentDescription = "Profile")
                     }
@@ -155,7 +155,7 @@ fun DashboardScreen(
 fun GreetingSection(userName: String) {
     val greeting = remember {
         val calendar = Calendar.getInstance()
-        when (calendar.get(Calendar.HOUR_OF_DAY)) {
+        when (calendar[Calendar.HOUR_OF_DAY]) {
             in 0..11 -> "Good morning,"
             in 12..16 -> "Good afternoon,"
             else -> "Good evening,"

@@ -6,20 +6,17 @@ import ug.ac.ndejje.nexus.model.NoticeCategory
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoticeRepository {
+/**
+ * Singleton repository for Notice Board.
+ */
+object NoticeRepository {
     private val _notices = mutableListOf<Notice>()
 
-    /**
-     * Fetches the latest notices from the server.
-     */
     suspend fun getNotices(): Result<List<Notice>> {
         delay(500)
         return Result.success(_notices.toList()) 
     }
 
-    /**
-     * Adds a new notice to the records.
-     */
     suspend fun addNotice(title: String, content: String, category: NoticeCategory): Result<Unit> {
         delay(500)
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -32,7 +29,7 @@ class NoticeRepository {
             date = currentDate,
             category = category
         )
-        _notices.add(0, newNotice) // Add to the top of the list
+        _notices.add(0, newNotice)
         return Result.success(Unit)
     }
 }

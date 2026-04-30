@@ -26,7 +26,7 @@ fun NoticeBoardScreen(
     onNavigateBack: () -> Unit,
 ) {
     var selectedCategory by remember { mutableStateOf(NoticeCategory.ALL) }
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(value = false) }
     
     val dashboardState by viewModel.dashboardState.collectAsState()
     val state = dashboardState
@@ -37,7 +37,7 @@ fun NoticeBoardScreen(
             onConfirm = { title, content, category ->
                 viewModel.addNotice(title, content, category)
                 showAddDialog = false
-            }
+            },
         )
     }
 

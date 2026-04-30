@@ -30,17 +30,12 @@ import ug.ac.ndejje.nexus.ui.theme.NexusTheme
 import ug.ac.ndejje.nexus.viewmodel.*
 
 class MainActivity : ComponentActivity() {
-    private val authRepository = AuthRepository()
-    private val noticeRepository = NoticeRepository()
-    private val shuttleRepository = ShuttleRepository()
-    private val sosRepository = SosRepository()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             NexusTheme {
-                NexusApp(authRepository, noticeRepository, shuttleRepository, sosRepository)
+                NexusApp()
             }
         }
     }
@@ -50,16 +45,11 @@ class MainActivity : ComponentActivity() {
  * NexusApp is the "Director" or "Traffic Controller" of the app.
  */
 @Composable
-fun NexusApp(
-    authRepository: AuthRepository,
-    noticeRepository: NoticeRepository,
-    shuttleRepository: ShuttleRepository,
-    sosRepository: SosRepository
-) {
+fun NexusApp() {
     val navController = rememberNavController()
-    val factory = remember { 
-        ViewModelFactory(authRepository, noticeRepository, shuttleRepository, sosRepository) 
-    }
+    
+    // Repositories are now singletons (objects), so we don't need to instantiate them here.
+    val factory = remember { ViewModelFactory() }
     
     /* We initialize the ViewModels. */
     val authViewModel: AuthViewModel = viewModel(factory = factory)
@@ -69,7 +59,7 @@ fun NexusApp(
     val profileViewModel: ProfileViewModel = viewModel()
     
     /* We "Watch" the current user from the repository. */
-    val currentUser by authRepository.currentUser.collectAsState()
+    val currentUser by AuthRepository.currentUser.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -116,7 +106,7 @@ fun NexusApp(
                 }
             }
         },
-        contentWindowInsets = WindowInsets(0, 0, 0, 0) // Key fix: prevent Scaffold from consuming insets
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
         NavHost(
             navController = navController, 
@@ -324,24 +314,19 @@ fun NexusApp(
 }
 
 /**
- * ViewModelFactory helps create ViewModels that need dependencies.
+ * ViewModelFactory helps create ViewModels using Singleton Repositories.
  */
-class ViewModelFactory(
-    private val authRepository: AuthRepository,
-    private val noticeRepository: NoticeRepository,
-    private val shuttleRepository: ShuttleRepository,
-    private val sosRepository: SosRepository
-) : androidx.lifecycle.ViewModelProvider.Factory {
+class ViewModelFactory : androidx.lifecycle.ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> 
-                AuthViewModel(authRepository) as T
+                AuthViewModel(AuthRepository) as T
             modelClass.isAssignableFrom(DashboardViewModel::class.java) -> 
-                DashboardViewModel(noticeRepository, shuttleRepository) as T
+                DashboardViewModel(NoticeRepository, ShuttleRepository) as T
             modelClass.isAssignableFrom(ShuttleViewModel::class.java) -> 
-                ShuttleViewModel(shuttleRepository) as T
+                ShuttleViewModel(ShuttleRepository) as T
             modelClass.isAssignableFrom(SosViewModel::class.java) -> 
-                SosViewModel(sosRepository) as T
+                SosViewModel(SosRepository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
     }

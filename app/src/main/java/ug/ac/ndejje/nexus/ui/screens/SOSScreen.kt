@@ -23,7 +23,7 @@ fun SOSScreen(
     user: User,
     viewModel: SosViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToConfirmation: () -> Unit
+    onNavigateToConfirmation: () -> Unit,
 ) {
     val sosState by viewModel.sosState.collectAsState()
     
