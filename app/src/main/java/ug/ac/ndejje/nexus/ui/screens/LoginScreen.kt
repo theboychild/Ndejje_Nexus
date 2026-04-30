@@ -131,7 +131,7 @@ fun LoginScreen(
             }
         }
 
-        // Bottom row for Driver and Security Access
+        // Bottom said for Driver and Security entry
         Box(
             modifier = Modifier
                 .fillMaxWidth()
