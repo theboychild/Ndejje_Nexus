@@ -22,7 +22,10 @@ data class Reservation(
     val status: ReservationStatus = ReservationStatus.PENDING
 )
 
-class ShuttleRepository {
+/**
+ * Singleton repository for Shuttle services.
+ */
+object ShuttleRepository {
     private val _reservations = MutableStateFlow<List<Reservation>>(emptyList())
     val reservations: StateFlow<List<Reservation>> = _reservations
 
@@ -32,9 +35,6 @@ class ShuttleRepository {
     ))
     val schedules: StateFlow<List<Pair<String, String>>> = _schedules
 
-    /**
-     * Fetches live shuttle info from the server.
-     */
     suspend fun getLiveShuttleInfo(): Result<ShuttleInfo?> {
         delay(1000)
         return Result.success(
@@ -45,9 +45,6 @@ class ShuttleRepository {
         ) 
     }
 
-    /**
-     * Fetches the static shuttle schedules.
-     */
     suspend fun getSchedules(): Result<List<Pair<String, String>>> {
         delay(500)
         return Result.success(_schedules.value)

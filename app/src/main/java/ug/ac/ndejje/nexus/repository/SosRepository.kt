@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import ug.ac.ndejje.nexus.model.SosAlert
 import ug.ac.ndejje.nexus.model.SosStatus
 
-class SosRepository {
+/**
+ * Singleton repository for SOS alerts.
+ */
+object SosRepository {
     private val _alerts = MutableStateFlow<List<SosAlert>>(emptyList())
     val alerts: StateFlow<List<SosAlert>> = _alerts.asStateFlow()
 
