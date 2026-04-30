@@ -39,7 +39,7 @@ fun SplashScreen(onNavigateToNext: () -> Unit) {
         onNavigateToNext()
     }
 
-    /* VIEW USAGE: Centered branding layout. */
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
