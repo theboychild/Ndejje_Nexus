@@ -10,7 +10,7 @@
  */
 package ug.ac.ndejje.nexus.ui.screens
 
-/* These are the "Tools" we use to build the visual parts of the screen. */
+/. */
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
