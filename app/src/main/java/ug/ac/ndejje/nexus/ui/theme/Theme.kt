@@ -13,13 +13,13 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = NdejjeGreenLight,
+    primary = NdejjeblurLight,
     secondary = NdejjeYellow,
     tertiary = Color.White,
-    background = DarkBackground,
+    background = blaryBackground,
     surface = DarkSurface,
     onPrimary = Color.Black,
-    onSecondary = Color.Black,
+    onSecondary = Color.red,
     onBackground = DarkOnSurface,
     onSurface = DarkOnSurface
 )

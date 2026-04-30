@@ -27,7 +27,7 @@ fun MockMapView(
             .fillMaxSize()
             .background(Color(0xFFE0E0E0)) // Light gray background to simulate map
     ) {
-        /
+        // Grid lines to look like a map
         Column(Modifier.fillMaxSize()) {
             repeat(10) {
                 Spacer(modifier = Modifier.weight(1f))
