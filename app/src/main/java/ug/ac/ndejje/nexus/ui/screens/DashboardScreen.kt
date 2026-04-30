@@ -145,7 +145,7 @@ fun DashboardScreen(
                 DashboardUiState.Idle -> {}
             }
             
-            // Extra spacing at bottom
+            // Extra spacing at bottom page
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }

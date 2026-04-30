@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ndejje Nexus</string>
+    <string name="app_name"> Ndejje Nexus</string>
     <string name="login_header">Sign In</string>
     <string name="email_hint">University Email</string>
     <string name="password_hint">Password</string>
@@ -8,11 +8,11 @@
     <string name="register_prompt">No account? Register</string>
 
     <string name="register_header">Register</string>
-    <string name="name_idea">Whole Name</string>
+    <string name="name_idea">Whole name</string>
     <string name="reg_number_hint">Registration Number</string>
     <string name="faculty_hint">Faculty</string>
     <string name="level_hint">Level</string>
-    <string name="program_hint">Program/Course</string>
+    <string name="program_hint">Program/Course  </string>
     <string name="register_button">Register</string>
 
     <string name="welcome_user">Welcome, %1$s</string>
