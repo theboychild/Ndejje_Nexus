@@ -1,3 +1,4 @@
+YT link: https://www.youtube.com/watch?v=mAfQ7JHJbB8
 Ndejje Nexus: Connecting the Campus
 Welcome to the official documentation for Ndejje Nexus, a comprehensive campus companion application specifically engineered for the students and staff of Ndejje University. This platform serves as a centralized digital hub to streamline university life through modern mobile technology.
 1. Project Overview
